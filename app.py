@@ -22,7 +22,7 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&display=swap');
     html, body, [class*="css"]  { font-family: 'Sora', 'Segoe UI', sans-serif; }
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
-    .title-text { font-size: 3rem; background: -webkit-linear-gradient(#0284C7, #0EA5E9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-align: center; margin-bottom: 0px; padding-top: 1rem;}
+    .title-text { font-size: 3rem; color: #0284C7; font-weight: 900; text-align: center; margin-bottom: 0px; padding-top: 1rem;}
     .subtitle-text { text-align: center; color: #475569; font-size: 1.1rem; margin-bottom: 2rem; font-weight: 500; letter-spacing: 1px;}
     
     .metric-container { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; margin-bottom: 20px;}
@@ -53,9 +53,16 @@ st.markdown("""
 # 2. CONFIG & ML PIPELINE
 # ==========================================
 # Load API key from Streamlit Secrets (production) or .env (development)
+API_KEY = None
 try:
-    API_KEY = st.secrets.get("OPENWEATHER_API_KEY")
+    # Try Streamlit Secrets first (for cloud deployment)
+    if "OPENWEATHER_API_KEY" in st.secrets:
+        API_KEY = st.secrets["OPENWEATHER_API_KEY"]
 except Exception:
+    pass
+
+# Fall back to .env file if secrets not available
+if not API_KEY:
     API_KEY = os.getenv('OPENWEATHER_API_KEY', None)
 
 @st.cache_resource
@@ -67,7 +74,7 @@ def load_ml_components():
 try:
     scaler, model = load_ml_components()
 except Exception as e:
-    st.error(f"Error loading ML models: {e}")
+    st.error(f"❌ Error loading ML models: {e}")
     st.stop()
 
 coastal_coords = {
