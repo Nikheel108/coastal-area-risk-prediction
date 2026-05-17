@@ -1,0 +1,12 @@
+pandas
+numpy
+scikit-learn==1.6.1
+xgboost
+joblib
+requests
+streamlit
+plotly
+matplotlib
+seaborn
+shap
+python-dotenv
