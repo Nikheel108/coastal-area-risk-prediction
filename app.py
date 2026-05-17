@@ -289,4 +289,3 @@ with main_col:
                     st.error(f"System Failure: {e}")
 
 st.write("---")
-st.markdown("<p style='text-align: center; color: #64748B; font-weight: 600;'>Developed by Nikheel | SY B.Tech AIML | Powered by XGBoost</p>", unsafe_allow_html=True)
