@@ -113,9 +113,16 @@ def render_alert(prediction, is_future=False):
     if prediction == 0:
         return f'<div class="alert-low"><div class="alert-title">🟢 SECURE ({time_context})</div><div class="alert-desc">Atmospheric conditions stable.</div></div>'
     elif prediction == 1:
-        return f'<div class="alert-med"><div class="alert-title">🟡 ELEVATED RISK ({time_context})</div><div class="alert-desc">Anomalous metrics detected. Advise monitoring.</div></div>'
+        return f'<div class="alert-med"><div class="alert-title">🟡 WARNING - NOT SAFE ({time_context})</div><div class="alert-desc">Anomalous metrics detected. Advise monitoring and avoid unnecessary coastal activity.</div></div>'
     elif prediction == 2:
-        return f'<div class="alert-high"><div class="alert-title">🔴 CRITICAL THREAT ({time_context})</div><div class="alert-desc">Severe cyclone/flood conditions predicted.</div></div>'
+        return f'<div class="alert-high"><div class="alert-title">🔴 UNSAFE - CRITICAL THREAT ({time_context})</div><div class="alert-desc">Severe cyclone/flood conditions predicted. Stay away from the coast.</div></div>'
+
+def show_status_message(prediction, is_future=False):
+    time_context = "forecast" if is_future else "current"
+    if prediction == 1:
+        st.warning(f"WARNING: The {time_context} coastal conditions are not safe. Monitor updates closely.")
+    elif prediction == 2:
+        st.error(f"UNSAFE: The {time_context} coastal conditions are critical. Avoid coastal exposure.")
 
 # ==========================================
 # 4. MAIN DASHBOARD UI
@@ -148,7 +155,15 @@ with main_col:
                         c_wind = curr_res['wind']['speed'] * 3.6 
                         c_vis = curr_res.get('visibility', 10000) / 1000 
                         
-                        f_data = fore_res['list'][23] # 72-Hour Data
+                        forecast_slots = {item['dt_txt']: item for item in fore_res['list']}
+                        forecast_times = list(forecast_slots.keys())
+                        selected_forecast_time = st.selectbox(
+                            "SELECT FORECAST DATE/TIME",
+                            forecast_times,
+                            index=min(23, len(forecast_times) - 1),
+                            help="Choose the exact forecast time you want the warning for."
+                        )
+                        f_data = forecast_slots[selected_forecast_time]
                         f_temp, f_hum, f_press = f_data['main']['temp'], f_data['main']['humidity'], f_data['main']['pressure']
                         f_wind = f_data['wind']['speed'] * 3.6 
                         f_vis = f_data.get('visibility', 10000) / 1000 
@@ -168,10 +183,12 @@ with main_col:
                                 <div class="metric-card"><p class="metric-value">{c_temp:.1f}°</p><p class="metric-label">🌡️ Temp (C)</p></div>
                             </div>
                             """, unsafe_allow_html=True)
+                            show_status_message(curr_pred, False)
                             st.markdown(render_alert(curr_pred, False), unsafe_allow_html=True)
 
                         # --- TAB 2: FORECAST ---
                         with tab_fore:
+                            st.caption(f"Forecast warning for: {selected_forecast_time}")
                             st.markdown(f"""
                             <div class="metric-container">
                                 <div class="metric-card"><p class="metric-value">{f_wind:.1f}</p><p class="metric-label">💨 Wind (km/h)</p></div>
@@ -180,6 +197,7 @@ with main_col:
                                 <div class="metric-card"><p class="metric-value">{f_temp:.1f}°</p><p class="metric-label">🌡️ Temp (C)</p></div>
                             </div>
                             """, unsafe_allow_html=True)
+                            show_status_message(fore_pred, True)
                             st.markdown(render_alert(fore_pred, True), unsafe_allow_html=True)
 
                         # --- TAB 3: HIGH-CONTRAST ANALYTICS ---
