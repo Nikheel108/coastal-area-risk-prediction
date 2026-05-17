@@ -52,8 +52,11 @@ st.markdown("""
 # ==========================================
 # 2. CONFIG & ML PIPELINE
 # ==========================================
-# Load API key from .env file
-API_KEY = os.getenv('OPENWEATHER_API_KEY', 'YOUR_OPENWEATHER_API_KEY_HERE')
+# Load API key from Streamlit Secrets (production) or .env (development)
+try:
+    API_KEY = st.secrets.get("OPENWEATHER_API_KEY")
+except Exception:
+    API_KEY = os.getenv('OPENWEATHER_API_KEY', None)
 
 @st.cache_resource
 def load_ml_components():
@@ -61,7 +64,11 @@ def load_ml_components():
     model = joblib.load('coastal_risk_xgboost.pkl')
     return scaler, model
 
-scaler, model = load_ml_components()
+try:
+    scaler, model = load_ml_components()
+except Exception as e:
+    st.error(f"Error loading ML models: {e}")
+    st.stop()
 
 coastal_coords = {
     "Ratnagiri": {"lat": 16.9902, "lon": 73.3000},
@@ -104,8 +111,8 @@ with main_col:
     CITY = st.selectbox("TARGET REGION", list(coastal_coords.keys()), label_visibility="collapsed")
 
     if st.button("INITIALIZE DUAL-PHASE SCAN 🔍", width='stretch', type="primary"):
-        if API_KEY == "YOUR_OPENWEATHER_API_KEY_HERE":
-            st.error("⚠️ Please replace the placeholder API key in app.py with your actual key.")
+        if not API_KEY or API_KEY == 'YOUR_OPENWEATHER_API_KEY_HERE':
+            st.error("⚠️ **API Key Required** - Please configure your OpenWeather API key:\n\n**For Local Development:** Add `OPENWEATHER_API_KEY=your_key` to `.env`\n\n**For Streamlit Cloud:** Add the secret in app settings → Secrets")
         else:
             with st.spinner('Establishing uplink with weather satellites... 📡'):
                 try:

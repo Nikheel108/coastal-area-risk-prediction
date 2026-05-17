@@ -7,10 +7,16 @@ font = "sans serif"
 
 [client]
 showErrorDetails = true
+toolbarMode = "minimal"
 
 [server]
 maxUploadSize = 200
 headless = true
+enableXsrfProtection = false
+port = 8501
 
 [logger]
 level = "info"
+
+[browser]
+gatherUsageStats = false
