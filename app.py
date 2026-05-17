@@ -80,10 +80,21 @@ except Exception as e:
 coastal_coords = {
     "Ratnagiri": {"lat": 16.9902, "lon": 73.3000},
     "Mumbai": {"lat": 18.9667, "lon": 72.8333},
+    "Palghar": {"lat": 19.6967, "lon": 72.7654},
+    "Daman": {"lat": 20.3974, "lon": 72.8328},
+    "Surat": {"lat": 21.1702, "lon": 72.8311},
+    "Bhavnagar": {"lat": 21.7645, "lon": 72.1519},
+    "Porbandar": {"lat": 21.6417, "lon": 69.6293},
+    "Kutch": {"lat": 23.2423, "lon": 69.6669},
     "Chennai": {"lat": 13.0827, "lon": 80.2707},
     "Kochi": {"lat": 9.9312, "lon": 76.2673},
     "Mangaluru": {"lat": 12.9141, "lon": 74.8560},
+    "Kozhikode": {"lat": 11.2588, "lon": 75.7804},
+    "Kannur": {"lat": 11.8745, "lon": 75.3704},
+    "Alleppey": {"lat": 9.4981, "lon": 76.3388},
     "Puri": {"lat": 19.8135, "lon": 85.8312},
+    "Paradip": {"lat": 20.3167, "lon": 86.6167},
+    "Digha": {"lat": 21.6221, "lon": 87.5064},
     "Visakhapatnam": {"lat": 17.6868, "lon": 83.2185}
 }
 
